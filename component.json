@@ -1,0 +1,15 @@
+{
+	"name": "ractive-decorators-datepicker",
+	"description": "ractive-decorators-datepicker",
+	"version": "0.1.0",
+	"keywords": [],
+	"dependencies": {
+		"ractivejs/ractive": "*"
+	},
+	"development": {},
+	"license": "MIT",
+	"main": "ractive-decorators-datepicker.js",
+	"scripts": [
+		"ractive-decorators-datepicker.js"
+	]
+}

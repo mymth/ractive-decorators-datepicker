@@ -1,0 +1,17 @@
+{
+	"name": "ractive-decorators-datepicker",
+	"version": "0.1.0",
+	"author": "Hidenao Miyamoto",
+	"main": "ractive-decorators-datepicker.js",
+	"ignore": [
+		".*",
+		"*.json",
+		"demo",
+		"grunt",
+		"node_modules",
+		"src",
+		"test",
+		"Gruntfile.js",
+		"index.html",
+	]
+}
