@@ -12,6 +12,6 @@
 		"src",
 		"test",
 		"Gruntfile.js",
-		"index.html",
+		"index.html"
 	]
 }
