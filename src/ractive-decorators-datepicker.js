@@ -133,7 +133,7 @@
 			});
 		}
 		if (inputs.length === 0) {
-			console.warn('Not supported configuration:', node);
+			// console.warn('Not supported configuration:', node);
 			return;
 		}
 

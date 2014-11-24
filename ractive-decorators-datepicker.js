@@ -35,14 +35,14 @@
 
 	'use strict';
 
-	// AMD environment
-	if ( typeof define === 'function' && define.amd ) {
-		define([ 'ractive', 'jquery' ], factory );
+	// Common JS (i.e.internalFormat/browserify)
+	if ( typeof module !== 'undefined' && module.exports && typeof require === 'function' ) {
+		factory( require( 'ractive' ), require( 'jquery' ) );
 	}
 
-	// Common JS (i.e.internalFormat/browserify)
-	else if ( typeof module !== 'undefined' && module.exports && typeof require === 'function' ) {
-		factory( require( 'ractive', 'jquery' ) );
+	// AMD environment
+	else if ( typeof define === 'function' && define.amd ) {
+		define([ 'ractive', 'jquery' ], factory );
 	}
 
 	// browser global
@@ -133,7 +133,7 @@
 			});
 		}
 		if (inputs.length === 0) {
-			console.warn('Not supported configuration:', node);
+			// console.warn('Not supported configuration:', node);
 			return;
 		}
 
