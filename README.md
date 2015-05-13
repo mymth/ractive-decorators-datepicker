@@ -5,7 +5,7 @@ This plugin is a decorator for [bootstrap-datepicker](https://github.com/eternic
 
 *Find more Ractive.js plugins at [http://docs.ractivejs.org/latest/plugins](http://docs.ractivejs.org/latest/plugins)*
 
-[See the demo here.](TODO)
+[See the demo here.](index.html)
 
 ## Usage
 

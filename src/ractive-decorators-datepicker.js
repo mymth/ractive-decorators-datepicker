@@ -59,7 +59,6 @@
 	'use strict';
 
 	var dpg = $.fn.datepicker.DPGlobal;
-	// var count = 0;
 
 	var datepickerDecorator = function ( node, type ) {
 		var ractive = node._ractive.root,
@@ -107,19 +106,23 @@
 
 		function setInputs(el) {
 			var $el = $(el),
-				$input;
+				$input,
+				keypath = el._ractive.binding ? el._ractive.binding.keypath : false;
+
+			if (typeof keypath == 'object') {
+				keypath = keypath.str;
+			}
 
 			$input = $el.clone();
 			$input.removeAttr('id')
 				.removeAttr('name')
-				// .val(dpg.formatDate(getDateObj(el.value), format, language))
 				.insertAfter($el);
 			$el.attr('type', 'hidden').detach().appendTo($holder);
 
 			inputs.push({
 				node: el,
 				$input: $input,
-				keypath: el._ractive.binding ? el._ractive.binding.keypath : false,
+				keypath: keypath,
 				setting: false,
 			});
 		}
