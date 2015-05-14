@@ -67,7 +67,8 @@
 			options, format, language,
 			$node = $(node),
 			$holder = $('<div class="dateinput-original" />').insertBefore($node),
-			inputs = [];
+			inputs = [],
+			setting = false;
 
 		this.defaults = {
 			internalFormat: 'yyyy-mm-dd',
@@ -123,14 +124,13 @@
 				node: el,
 				$input: $input,
 				keypath: keypath,
-				setting: false,
 			});
 		}
 
 		if (node.tagName == 'INPUT') {
 			setInputs(node);
 			$node = inputs[0].$input;
-		} else if ($node.is('.input-daterange')) {
+		} else if ($node.hasClass('input-daterange')) {
 			$node.children('input[type="text"]').each(function(index, el) {
 				setInputs(el);
 			});
@@ -144,15 +144,15 @@
 			for (var i in inputs) {
 				var item = inputs[i], date;
 
-				if (!item.setting) {
-					item.setting = true;
+				if (!setting) {
+					setting = true;
 
 					date = isNaN((date = item.$input.datepicker('getDate'))) ? null : date;
 					item.node.value = dpg.formatDate(date, internalFormat, language);
 					if (item.keypath) {
 						ractive.updateModel(item.keypath);
 					}
-					item.setting = false;
+					setting = false;
 				}
 			}
 		});
@@ -160,10 +160,10 @@
 		$.map(inputs, function(item) {
 			if (item.keypath) {
 				item.observer = ractive.observe(item.keypath, function ( newValue ) {
-					if (!item.setting) {
-						item.setting = true;
+					if (!setting) {
+						setting = true;
 						item.$input.datepicker('setDate', getDateObj(newValue));
-						item.setting = false;
+						setting = false;
 					}
 				});
 			}
