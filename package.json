@@ -1,19 +1,32 @@
 {
   "name": "ractive-decorators-datepicker",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "author": {
     "name": "Hidenao Miyamoto"
   },
+  "license": "MIT",
   "main": "ractive-decorators-datepicker.js",
   "description": "ractive-decorators-datepicker plugin for Ractive.js",
   "dependencies": {},
   "devDependencies": {
-    "grunt": "~0.4.5",
-    "jit-grunt": "~0.7.0",
-    "grunt-contrib-concat": "~0.4.0",
-    "grunt-contrib-qunit": "~0.4.0",
-    "grunt-contrib-uglify": "~0.4.0",
-    "grunt-contrib-jshint": "~0.10.0",
-    "grunt-contrib-copy": "~0.5.0"
+    "babel-preset-es2015-rollup": "^3.0.0",
+    "livereload": "^0.6.2",
+    "npm-run-all": "^4.0.2",
+    "rollup": "^0.41.6",
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-multidest": "^1.0.1",
+    "rollup-plugin-uglify": "^1.0.2",
+    "rollup-watch": "^3.2.2",
+    "uglify-js-harmony": "^2.7.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://mymth@bitbucket.org/mymth/ractive-decorators-datepicker.git"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c --watch",
+    "reload": "livereload 'ractive-decorators-datepicker.js, test/' -d",
+    "watch": "npm-run-all --parallel reload dev"
   }
 }
