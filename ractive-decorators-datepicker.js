@@ -4,17 +4,19 @@
 
   Version 0.2.0.
 
-  This plugin is a decorator for bootstrap-datepicker that allows users to
-  use different date formats between datepicker UI and internal data.
+  This plugin is a decorator for bootstrap-datepicker.
 
   ==========================
 */
 
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define(factory) :
-	(global.datepickerDecorator = factory());
-}(this, (function () { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('ractive'), require('jquery')) :
+	typeof define === 'function' && define.amd ? define(['ractive', 'jquery'], factory) :
+	(global.datepickerDecorator = factory(global.Ractive,global.$));
+}(this, (function (Ractive,$) { 'use strict';
+
+Ractive = 'default' in Ractive ? Ractive['default'] : Ractive;
+$ = 'default' in $ ? $['default'] : $;
 
 var datepickerDecorator = function datepickerDecorator(node) {
   var _this = this;

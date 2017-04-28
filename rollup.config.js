@@ -10,8 +10,7 @@ let banner = `/*
 
   Version <%= pkg.version %>.
 
-  This plugin is a decorator for bootstrap-datepicker that allows users to
-  use different date formats between datepicker UI and internal data.
+  This plugin is a decorator for bootstrap-datepicker.
 
   ==========================
 */
@@ -20,6 +19,11 @@ let banner = `/*
 export default {
   entry: `./src/${pkgName}.js`,
   moduleName: 'datepickerDecorator',
+  external: ['ractive', 'jquery'],
+  globals: {
+    ractive: 'Ractive',
+    jquery: '$',
+  },
   banner,
   format: 'umd',
   plugins: [
