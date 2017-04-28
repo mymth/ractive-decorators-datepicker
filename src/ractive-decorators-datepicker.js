@@ -1,3 +1,6 @@
+import Ractive from 'ractive';
+import $ from 'jquery';
+
 const datepickerDecorator = function (node, type = 'default') {
   const internalFormat = datepickerDecorator.internalFormat;
   const types = datepickerDecorator.types;
