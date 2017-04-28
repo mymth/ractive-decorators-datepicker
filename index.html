@@ -1,139 +1,144 @@
 <!doctype html>
-<html lang='en-GB'>
+<html lang='en-US'>
 <head>
-	<meta charset='utf-8'>
-	<title>Ractive.js datepicker decorator plugin</title>
+    <meta charset='utf-8'>
+    <title>Ractive.js datepicker decorator plugin</title>
 
-	<!-- CSS -->
-	<link href='http://fonts.googleapis.com/css?family=Voltaire' rel='stylesheet' type='text/css'>
-	<link rel='stylesheet' href='demo/main.css'>
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdn.rawgit.com/twbs/bootstrap/v3.3.7/dist/css/bootstrap.min.css">
+    <link rel='stylesheet' href='https://cdn.rawgit.com/uxsolutions/bootstrap-datepicker/v1.6.4/dist/css/bootstrap-datepicker3.standalone.min.css'>
+    <link href='http://fonts.googleapis.com/css?family=Voltaire' rel='stylesheet' type='text/css'>
+    <link rel='stylesheet' href='demo/main.css'>
 
-	<!-- TODO add styles specific to this demo -->
-	<link rel="stylesheet" href="vendor/bootstrap/dist/css/bootstrap.min.css">
-	<link rel="stylesheet" href="vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
-	<link rel="stylesheet" href="vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css">
-	<style type='text/css'>
-
-	</style>
+    <!-- TODO add styles specific to this demo -->
+    <style type='text/css'>
+    body {
+        position: relative;
+    }
+    </style>
 </head>
 
 <body>
 
-	<!-- if the project is on GitHub, add a fork me button! -->
-	<!-- <a class='forkme' href='https://github.com/you/repo'>Fork me on GitHub</a> -->
+    <!-- <a class='forkme' href='https://github.com/you/repo'>Fork me on GitHub</a> -->
 
-	<header>
-		<h1>Ractive.js datepicker decorator plugin</h1>
-		<p class='strap'>
-			<span class='download'>download: <a href='#'>ractive-decorators-datepicker.js</a></span>
-			<span class='more-plugins'>more plugins at <a href='http://docs.ractivejs.org/latest/plugins'>docs.ractivejs.org/latest/plugins</a></span>
-		</p>
-	</header>
+    <header>
+        <h1>Ractive.js datepicker decorator plugin</h1>
+        <p class='strap'>
+            <span class='download'>download: <a href='#'>ractive-decorators-datepicker.js</a></span>
+            <span class='more-plugins'>more plugins at <a href='http://docs.ractivejs.org/latest/plugins'>docs.ractivejs.org/latest/plugins</a></span>
+        </p>
+    </header>
 
-	<main>
-		<p>This plugin is a decorator for <a href="https://github.com/eternicode/bootstrap-datepicker">bootstrap-datepicker</a> that allows you to use different date formats between datepicker UI and internal data.</p>
+    <main>
+        <p>This plugin is a decorator for <a href="https://github.com/eternicode/bootstrap-datepicker">bootstrap-datepicker</a>.</p>
+        <p>To customize datepicker, set your options object to <code>datepickerDecorator.types.default</code>. You can also set up multiple types by adding options objects to <code>datepickerDecorator.types</code> using their names.<br>
+        The plugin allows you to use different date formats between datepicker UI and internal data by setting <code>datepickerDecorator.internalFormat</code>.</p>
+        <p>Bootstrap-datepicker components <em>(not to be confused with Ractive components)</em> are not supported. You can create an equivalent like an example below when you need it.</p>
 
-		<div id='demo' class='clearfix'></div>
+        <div id='demo' class='clearfix'></div>
 
-		<pre id='demo-template-view' class='prettyprint lang-html'></pre>
-		<pre id='demo-code-view' class='prettyprint lang-js'></pre>
-	</main>
+        <pre id='demo-template-view' class='prettyprint lang-html'></pre>
+        <pre id='demo-code-view' class='prettyprint lang-js'></pre>
+    </main>
 
-	<!-- add additional info such as your homepage here, if you want -->
-	<footer>
-		<p>Copyright &copy; 2014 Hidenao Miyamoto. Licensed MIT</p>
-	</footer>
+    <!-- add additional info such as your homepage here, if you want -->
+    <footer>
+        <p>Copyright &copy; 2016 Hidenao Miyamoto. Licensed MIT</p>
+    </footer>
 
-	<!-- Demo template -->
-	<script id='demo-template' type='text/ractive'>
-		<form>
-			<!-- input -->
-			<div class="form-group">
-				<label for="date">Date Input</label>
-				<input type="text" class="form-control" decorator="datepicker" value="{{date}}">
-				<div class="row">
-					<p class="help-block col-xs-3">
-						Internal value:
-						<input type="text" class="form-control" value="{{date}}"></p>
-				</div>
-			</div>
+    <!-- Demo template -->
+    <script id='demo-template' type='text/ractive'>
+        <form>
+            <!-- input -->
+            <div class="form-group">
+                <label for="date">Date Input</label>
+                <input type="text" class="form-control" as-datepicker value="{{date}}">
+                <div class="row">
+                    <p class="help-block col-xs-3">
+                        Internal value:
+                        <input type="text" class="form-control" value="{{date}}"></p>
+                </div>
+            </div>
 
-			<!-- date-range -->
-			<div class="form-group">
-				<label for="date-range">Date Range</label>
-				{{#dateRange}}
-				<div class="input-group input-daterange" decorator="datepicker">
-					<input type="text" class="form-control" value="{{startDate}}">
-					<span class="input-group-addon">to</span>
-					<input type="text" class="form-control" value="{{endDate}}">
-				</div>
-				<div class="row">
-					<div class="help-block col-xs-3">
-						Internal values:<br>
-						start:
-						<input type="text" class="form-control" value="{{startDate}}"></div>
-					<div class="help-block col-xs-3">
-						<br>
-						end:
-						<input type="text" class="form-control" value="{{endDate}}"></div>
-				</div>
-				{{/dateRange}}
-			</div>
+            <!-- date-range -->
+            <div class="form-group">
+                <label for="date-range">Date Range</label>
+                {{#dateRange}}
+                <div class="input-group input-daterange" as-datepicker>
+                    <input type="text" class="form-control" value="{{startDate}}">
+                    <span class="input-group-addon">to</span>
+                    <input type="text" class="form-control" value="{{endDate}}">
+                </div>
+                <div class="row">
+                    <div class="help-block col-xs-3">
+                        Internal values:<br>
+                        start:
+                        <input type="text" class="form-control" value="{{startDate}}"></div>
+                    <div class="help-block col-xs-3">
+                        <br>
+                        end:
+                        <input type="text" class="form-control" value="{{endDate}}"></div>
+                </div>
+                {{/dateRange}}
+            </div>
 
-			<hr>
-			<p>Components are not supported at the moment. However, you can create an equivalent like an example below when you need it.</p>
-			<div class="form-group">
-				<label for="date-component">Component</label>
-				<div class="input-group date">
-					<input type="text" class="form-control" decorator="datepicker" value="{{dateComponent}}">
-					<p class="input-group-addon"><i class="glyphicon glyphicon-th"></i></p>
-				</div>
-				<div class="help-block">Internal value: {{dateComponent}}</div>
-			</div>
-  		</form>
-	</script>
+            <hr>
+            <!-- component equivalent -->
+            <div class="form-group">
+                <label for="date-component">Component equivalent</label>
+                <div class="input-group date">
+                    <input type="text" class="form-control" as-datepicker="'todayBtn'" value="{{dateComponent}}">
+                    <p class="input-group-addon"><i class="glyphicon glyphicon-th"></i></p>
+                </div>
+                <div class="help-block">Internal value: {{dateComponent}}</div>
+            </div>
+        </form>
+    </script>
 
-	<!-- Dependencies -->
-	<script src="vendor/jquery/dist/jquery.min.js"></script>
-	<script src="vendor/bootstrap/dist/js/bootstrap.min.js"></script>
-	<script src="vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
-	<script src='vendor/ractive/ractive.js'></script>
-	<script src='ractive-decorators-datepicker.js'></script>
+    <!-- Dependencies -->
+    <script src="https://cdn.rawgit.com/jquery/jquery/3.2.1/dist/jquery.js"></script>
+    <script src="https://cdn.rawgit.com/twbs/bootstrap/v3.3.7/dist/js/bootstrap.js"></script>
+    <script src='https://cdn.rawgit.com/ractivejs/ractive/v0.8.12/ractive-legacy.js'></script>
+    <script src="https://cdn.rawgit.com/uxsolutions/bootstrap-datepicker/v1.6.4/dist/js/bootstrap-datepicker.js"></script>
+    <script src='ractive-decorators-datepicker.js'></script>
 
-	<!-- Demo code -->
-	<script id='demo-code'>
-		Ractive.decorators.datepicker.types = {
-			default: {
-				autoclose: true,
-				clearBtn: true
-			},
-			todayBtn: {
-				todayBtn: true,
-				todayHighlight: true
-			}
-		};
+    <!-- Demo code -->
+    <script id='demo-code'>
+        datepickerDecorator.internalFormat = 'yyyy-mm-dd';
+        datepickerDecorator.types = {
+            default: {
+                autoclose: true,
+                clearBtn: true
+            },
+            todayBtn: {
+                todayBtn: true,
+                todayHighlight: true
+            }
+        };
 
-		ractive = new Ractive({
-			el: 'demo',
-			template: '#demo-template',
-			data: {
-				date: '2014-05-15',
-				dateRange: {
-					startDate: '2014-10-10',
-					endDate: '2014-10-16'
-				},
-				dateComponent: '2014-09-01'
-			}
-		});
+        ractive = new Ractive({
+            el: 'demo',
+            template: '#demo-template',
+            data: {
+                date: '2017-05-15',
+                dateRange: {
+                    startDate: '2016-10-10',
+                    endDate: '2016-10-16'
+                },
+                dateComponent: '2017-09-01'
+            },
+            decorators: {datepicker: datepickerDecorator},
+        });
 
-		// for component
-		$('.input-group.date').find('.input-group-addon').on('click', function () {
-			$(this).siblings('input').datepicker('show');
-		});
-	</script>
+        // for component equivalent
+        $('.input-group.date').find('.input-group-addon').on('click', function () {
+            $(this).siblings('input').datepicker('show');
+        });
+    </script>
 
-	<!-- Insert code into the page -->
-	<script src='demo/prettify.js'></script>
-	<script src='demo/demo.js'></script>
+    <!-- Insert code into the page -->
+    <script src='demo/prettify.js'></script>
+    <script src='demo/demo.js'></script>
 </body>
 </html>
