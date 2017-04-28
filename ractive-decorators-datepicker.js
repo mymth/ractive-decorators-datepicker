@@ -21,7 +21,7 @@ var datepickerDecorator = function datepickerDecorator(node) {
 
   var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'default';
 
-  var config = datepickerDecorator.config;
+  var internalFormat = datepickerDecorator.internalFormat;
   var types = datepickerDecorator.types;
   var dpg = $.fn.datepicker.DPGlobal;
   var dateInputs = [];
@@ -29,7 +29,7 @@ var datepickerDecorator = function datepickerDecorator(node) {
   var setting = false;
 
   var options = types.hasOwnProperty(type) ? types[type] : types.default;
-  var format = config.internalFormat || options.format || $.fn.datepicker.defaults.format;
+  var format = internalFormat || options.format || $.fn.datepicker.defaults.format;
   var language = options.language || $.fn.datepicker.defaults.language;
   var $holder = $('<div class="dateinput-original" />').insertBefore($node);
 
@@ -112,9 +112,7 @@ var datepickerDecorator = function datepickerDecorator(node) {
   };
 };
 
-datepickerDecorator.config = {
-  internalFormat: null
-};
+datepickerDecorator.internalFormat = null;
 datepickerDecorator.types = {
   default: {}
 };

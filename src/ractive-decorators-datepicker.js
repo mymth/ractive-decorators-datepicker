@@ -1,5 +1,5 @@
 const datepickerDecorator = function (node, type = 'default') {
-  const config = datepickerDecorator.config;
+  const internalFormat = datepickerDecorator.internalFormat;
   const types = datepickerDecorator.types;
   const dpg = $.fn.datepicker.DPGlobal;
   const dateInputs = [];
@@ -7,7 +7,7 @@ const datepickerDecorator = function (node, type = 'default') {
   let setting = false;
 
   const options = types.hasOwnProperty(type) ? types[type] : types.default;
-  const format = config.internalFormat || options.format || $.fn.datepicker.defaults.format;
+  const format = internalFormat || options.format || $.fn.datepicker.defaults.format;
   const language = options.language || $.fn.datepicker.defaults.language;
   const $holder = $('<div class="dateinput-original" />').insertBefore($node);
 
@@ -90,9 +90,7 @@ const datepickerDecorator = function (node, type = 'default') {
   };
 };
 
-datepickerDecorator.config = {
-  internalFormat: null,
-};
+datepickerDecorator.internalFormat = null;
 datepickerDecorator.types = {
   default: {},
 };

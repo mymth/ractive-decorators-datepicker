@@ -21,16 +21,6 @@ describe('datepickerDecorator', function () {
     }
   }
 
-  var getDateRangePicker = function getDateRangePicker(selector) {
-    return $(selector).data().datepicker;
-  }
-
-  describe('config', function () {
-    it('is {internalFormat:null} by default', function () {
-      expect(datepickerDecorator.config, 'to equal', {internalFormat: null});
-    });
-  });
-
   describe('types', function () {
     it('has an empty "default" type by default', function () {
       expect(datepickerDecorator.types.default, 'to be an', 'object');
@@ -185,15 +175,19 @@ describe('datepickerDecorator', function () {
     });
   });
 
-  describe('config.internalFormat', function () {
+  describe('internalFormat', function () {
     var ractive, datepicker;
 
     after(function () {
       ractive.teardown();
-      datepickerDecorator.config.internalFormat = null;
+      datepickerDecorator.internalFormat = null;
     });
 
-    it('changes the format of the data stored in ractive', function () {
+    it('is null by default', function () {
+      expect(datepickerDecorator.internalFormat, 'to be null');
+    });
+
+    it('specifies the format of the dates stored in ractive', function () {
       datepickerDecorator.types.GB = {format: 'dd/mm/yyyy'};
 
       ractive = new Ractive({
@@ -216,7 +210,7 @@ describe('datepickerDecorator', function () {
 
       ractive.teardown();
 
-      datepickerDecorator.config.internalFormat = 'yyyy-mm-dd';
+      datepickerDecorator.internalFormat = 'yyyy-mm-dd';
 
       ractive = new Ractive({
         el: 'test-container',
