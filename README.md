@@ -1,7 +1,6 @@
 # Ractive.js datepicker decorator plugin
 
-This plugin is a decorator for [bootstrap-datepicker](https://github.com/eternicode/bootstrap-datepicker) that allows you to use different date formats between datepicker UI and internal data.
-
+This plugin is a decorator for [bootstrap-datepicker](https://github.com/eternicode/bootstrap-datepicker).
 
 *Find more Ractive.js plugins at [http://docs.ractivejs.org/latest/plugins](http://docs.ractivejs.org/latest/plugins)*
 
@@ -9,106 +8,116 @@ This plugin is a decorator for [bootstrap-datepicker](https://github.com/eternic
 
 ## Usage
 
-Include this file on your page below Ractive, e.g:
+Load the plugin.
 
 ```html
-<script src='lib/ractive.js'></script>
-<script src='lib/ractive-decorators-datepicker.js'></script>
+<!-- on Browser (plugin is exposed to global with 'datepickerDecorator' signature) -->
+<script src="lib/ractive.js"></script>
+<script src="lib/ractive-decorators-datepicker.js"></script>
+```
+```js
+// on Node.js
+var Ractive = require( 'ractive' );
+var datepickerDecorator = require( 'ractive-decorators-datepicker' );
 ```
 
-Or, if you're using a module loader, require this module:
+Make the decorator available.
 
 ```js
-// requiring the plugin will 'activate' it - no need to use the return value
-require( 'ractive-decorators-datepicker' );
+// to all Ractive instances
+Ractive.decorators.datepicker = datepickerDecorator;
+
+// to a single instance
+var ractive = new Ractive({
+    el: '#container',
+    template: template,
+    decorators: {
+        datepicker: datepickerDecorator,
+    },
+});
+
+// to all instaces of RactiveDatepicker
+var RactiveDatepicker = Ractive.extend({
+    decorators: {
+        datepicker: datepickerDecorator,
+    },
+})
 ```
 
-Then, add `decorator` attribute to the input tag or the div tag for date-range in your template.
+Set the `as-datepicker` attribute to the `input` tag (for single date) or `input-daterange` class element (for date range) you want to use the decorator.
 
 ```html
 <!-- single date input -->
-<input type="text" decorator="datepicker" value="{{date}}">
+<input type="text" as-datepicker value="{{date}}">
 
-<!-- date-range -->
-<div class="input-group input-daterange" decorator="datepicker">
+<!-- date range -->
+<div class="input-group input-daterange" as-datepicker>
     <input type="text" value="{{startDate}}">
     <span class="input-group-addon">to</span>
     <input type="text" value="{{endDate}}">
 </div>
 ```
--
-Components are not supported at the moment. Howerver, you can create an equivalent like an example below when you need it.
+
+> Bootstrap-datepicker components *(not to be confused with Ractive components)* are not supported. You can create an equivalent like an example below when you need it.
+> 
+> ```html
+> <!-- component equivalent -->
+> <div class="input-group date">
+>     <input type="text" as-datepicker value="{{date}}">
+>     <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+> </div>
+> 
+> <script>
+>     $('.input-group.date').find('.input-group-addon').on('click', function () {
+>         $(this).siblings('input').datepicker('show');
+>     });
+> </script>
+> ```
+
+
+### Using types
+
+#### Customizing the default type
+
+You can set your initialize options for bootstrap-datepicker to `datepickerDecorator.types.default`.
+
+```js
+datepickerDecorator.types.default = {
+    autoclose: true,
+    clearBtn: true
+};
+```
+
+#### Adding types
+
+You can also use multiple types of bootstrap-datepicker elements.
+To use additional types, first, add new types to `datepickerDecorator.types` with their initialize options.
+
+```js
+datepickerDecorator.types.todayBtn = {
+    todayBtn: true,
+    todayHighlight: true
+};
+datepickerDecorator.types.multi = {
+    multidate: true,
+};
+```
+
+Then set the type name to the `as-datepicker` attribute.
+> Note: type name *must be quoted* so that the decorator can take it as a literal.
 
 ```html
-<!-- component -->
-<div class="input-group date">
-    <input type="text" decorator="datepicker" value="{{date}}">
-    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-</div>
-
-<script>
-	$('.input-group.date').find('.input-group-addon').on('click', function () {
-		$(this).siblings('input').datepicker('show');
-	});
-</script>
+<input type="text" as-datepicker="'todayBtn'" value="{{date}}">
 ```
--
 
-### Customization
+### Using internal date format
 
-#### Changing the configuration
-
-Set your configuration object to `Ractive.decorators.datepicker.config`.
+The plugin allows you to use different date formats between datepicker UI and internal data. To use it, set a date format to `datepickerDecorator.internalFormat`.
 
 ```js
-Ractive.decorators.datepicker.config = {
-	internalFormat: 'yyyy-mm-dd',
-};
-```
-
-#### Changing the default options
-
-Set your options object to `Ractive.decorators.datepicker.types.default`.
-
-```js
-Ractive.decorators.datepicker.types.default = {
-	autoclose: true,
-	clearBtn: true
-};
-```
-
-#### Adding another option set
-
-Add an options object into `Ractive.decorators.datepicker.types` as a new property.
-
-```js
-Ractive.decorators.datepicker.types.todayBtn = {
-	todayBtn: true,
-	todayHighlight: true
-};
-```
-
-Then use the property name as the modifier of `decorator` attribute.
-
-```html
-<input type="text" decorator='datepicker:todayBtn' value='{{date}}'>
-```
-
-#### Using a function
-
-Function that returns an options object can also be used. The DOM node which datepicker is applied to is passed as the argument.
-
-```js
-Ractive.decorators.datepicker.types.todayBtn = function (node) {
-	return {
-		todayBtn: true,
-		todayHighlight: true
-	};
-};
+datepickerDecorator.internalFormat = 'yyyy-mm-dd';
 ```
 
 ## License
 
 Copyright (c) 2014 Hidenao Miyamoto. Licensed MIT
-
-Created with the [Ractive.js plugin template](https://github.com/ractivejs/plugin-template) for Grunt.

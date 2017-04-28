@@ -1,191 +1,122 @@
 /*
+  ractive-decorators-datepicker
+  ===============================================
 
-	ractive-decorators-datepicker
-	=============================
+  Version 0.2.0.
 
-	Version 0.1.1.
+  This plugin is a decorator for bootstrap-datepicker that allows users to
+  use different date formats between datepicker UI and internal data.
 
-	This plugin is a decorator for bootstrap-datepicker that allows users to
-	use different date formats between datepicker UI and internal data.
-
-	==========================
-
-	Troubleshooting: If you're using a module system in your app (AMD or
-	something more nodey) then you may need to change the paths below,
-	where it says `require( 'ractive' )` or `define([ 'ractive' ]...)`.
-
-	==========================
-
-	Usage: Include this file on your page below Ractive, e.g:
-
-	    <script src='lib/ractive.js'></script>
-	    <script src='lib/ractive-decorators-datepicker.js'></script>
-
-	Or, if you're using a module loader, require this module:
-
-	    // requiring the plugin will 'activate' it - no need to use
-	    // the return value
-	    require( 'ractive-decorators-datepicker' );
-
-	<< more specific instructions for this plugin go here... >>
-
+  ==========================
 */
 
-(function ( global, factory ) {
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+	typeof define === 'function' && define.amd ? define(factory) :
+	(global.datepickerDecorator = factory());
+}(this, (function () { 'use strict';
 
-	'use strict';
+var datepickerDecorator = function datepickerDecorator(node) {
+  var _this = this;
 
-	// Common JS (i.e.internalFormat/browserify)
-	if ( typeof module !== 'undefined' && module.exports && typeof require === 'function' ) {
-		factory( require( 'ractive' ), require( 'jquery' ) );
-	}
+  var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'default';
 
-	// AMD environment
-	else if ( typeof define === 'function' && define.amd ) {
-		define([ 'ractive', 'jquery' ], factory );
-	}
+  var internalFormat = datepickerDecorator.internalFormat;
+  var types = datepickerDecorator.types;
+  var dpg = $.fn.datepicker.DPGlobal;
+  var dateInputs = [];
+  var $node = $(node);
+  var setting = false;
 
-	// browser global
-	else if ( global.Ractive && global.jQuery ) {
-		factory( global.Ractive, global.jQuery );
-	}
+  var options = types.hasOwnProperty(type) ? types[type] : types.default;
+  var format = internalFormat || options.format || $.fn.datepicker.defaults.format;
+  var language = options.language || $.fn.datepicker.defaults.language;
+  var $holder = $('<div class="dateinput-original" />').insertBefore($node);
 
-	else {
-		throw new Error( 'Could not find Ractive! It must be loaded before the ractive-decorators-datepicker plugin' );
-	}
+  var prepareDateInputs = function prepareDateInputs(el) {
+    var $el = $(el);
+    var keypath = Ractive.getNodeInfo(el).getBindingPath();
+    var $input = $el.clone();
 
-}( typeof window !== 'undefined' ? window : this, function ( Ractive, $ ) {
+    $input.removeAttr('id').removeAttr('name').insertAfter($el);
+    $el.attr('type', 'hidden').detach().appendTo($holder);
 
-	'use strict';
+    dateInputs.push({ node: el, $input: $input, keypath: keypath });
+  };
 
-	var dpg = $.fn.datepicker.DPGlobal;
+  if (node.tagName == 'INPUT') {
+    prepareDateInputs(node);
+    $node = dateInputs[0].$input;
+  } else if ($node.hasClass('input-daterange')) {
+    $node.children('input[type="text"]').each(function (index, el) {
+      prepareDateInputs(el);
+    });
+  }
+  if (dateInputs.length === 0) {
+    return {
+      teardown: function teardown() {}
+    };
+  }
 
-	var datepickerDecorator = function ( node, type ) {
-		var ractive = node._ractive.root,
-			config, internalFormat,
-			types = datepickerDecorator.types,
-			options, format, language,
-			$node = $(node),
-			$holder = $('<div class="dateinput-original" />').insertBefore($node),
-			inputs = [],
-			setting = false;
+  $node.datepicker(options).on('changeDate', function () {
+    dateInputs.forEach(function (item) {
+      if (!item.keypath || setting) {
+        return;
+      }
 
-		this.defaults = {
-			internalFormat: 'yyyy-mm-dd',
-		};
-		config = $.extend(this.defaults, datepickerDecorator.config);
-		internalFormat = config.internalFormat;
+      var date = item.$input.datepicker('getDate');
 
-		if (!types.hasOwnProperty('default')) {
-			types.default = {};
-		}
+      setting = true;
+      _this.set(item.keypath, dpg.formatDate(date, format, language) || null);
+      setting = false;
+    });
+  });
 
-		options = (type && types.hasOwnProperty(type)) ? types[type] : types['default'];
-		if (typeof options === 'function') {
-			options = options.call(this, node);
-		}
-		format = options.format || $.fn.datepicker.defaults.format;
-		language = options.language || $.fn.datepicker.defaults.language;
+  dateInputs.forEach(function (item) {
+    if (!item.keypath) {
+      return;
+    }
 
-		function getDateObj(dateStr) {
-			var dateObj;
+    item.observer = _this.observe(item.keypath, function (newValue) {
+      if (setting) {
+        return;
+      }
 
-			if (!dateStr || dateStr === '') {
-				return null;
-			} else if (dateStr.match(/^\d+(-\d+){2}$/)) {
-				// Since both datepicker's and JS native date parsers consider the date formed with
-				// numbers separated by '-' as UTC, replace the '-' with '/' so the parsers treat it
-				// as local date.
-				dateObj = new Date(dateStr.replace(/-/g, '/'));
-			} else {
-				// otherwise, use datepicker's date parser
-				dateObj = dpg.parseDate(dateStr, internalFormat, language);
-			}
+      var date = dpg.parseDate(newValue, format, language);
+      if (date) {
+        // adjust the time so the parsed Date becomes 00:00:00 localtime of that date
+        // because Datepicker parses date as UTC regardless of the format
+        date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+      } else {
+        date = '';
+      }
 
-			return isNaN(dateObj) ? null : dateObj;
-		}
+      setting = true;
+      item.$input.datepicker('setDate', date);
+      setting = false;
+    });
+  });
 
-		function setInputs(el) {
-			var $el = $(el),
-				$input,
-				keypath = el._ractive.binding ? el._ractive.binding.keypath : false;
+  return {
+    teardown: function teardown() {
+      $node.datepicker('remove');
+      dateInputs.forEach(function (item) {
+        if (item.observer) {
+          item.observer.cancel();
+        }
+        $(item.node).detach().insertBefore(item.$input).attr('type', 'text');
+        item.$input.remove();
+      });
+      $holder.remove();
+    }
+  };
+};
 
-			if (typeof keypath == 'object') {
-				keypath = keypath.str;
-			}
+datepickerDecorator.internalFormat = null;
+datepickerDecorator.types = {
+  default: {}
+};
 
-			$input = $el.clone();
-			$input.removeAttr('id')
-				.removeAttr('name')
-				.insertAfter($el);
-			$el.attr('type', 'hidden').detach().appendTo($holder);
+return datepickerDecorator;
 
-			inputs.push({
-				node: el,
-				$input: $input,
-				keypath: keypath,
-			});
-		}
-
-		if (node.tagName == 'INPUT') {
-			setInputs(node);
-			$node = inputs[0].$input;
-		} else if ($node.hasClass('input-daterange')) {
-			$node.children('input[type="text"]').each(function(index, el) {
-				setInputs(el);
-			});
-		}
-		if (inputs.length === 0) {
-			// console.warn('Not supported configuration:', node);
-			return;
-		}
-
-		$node.datepicker(options).on('changeDate', function () {
-			for (var i in inputs) {
-				var item = inputs[i], date;
-
-				if (!setting) {
-					setting = true;
-
-					date = isNaN((date = item.$input.datepicker('getDate'))) ? null : date;
-					item.node.value = dpg.formatDate(date, internalFormat, language);
-					if (item.keypath) {
-						ractive.updateModel(item.keypath);
-					}
-					setting = false;
-				}
-			}
-		});
-
-		$.map(inputs, function(item) {
-			if (item.keypath) {
-				item.observer = ractive.observe(item.keypath, function ( newValue ) {
-					if (!setting) {
-						setting = true;
-						item.$input.datepicker('setDate', getDateObj(newValue));
-						setting = false;
-					}
-				});
-			}
-		});
-
-		return {
-			teardown: function () {
-				$node.datepicker('remove');
-				$.map(inputs, function(item) {
-					if (item.observer) {
-						item.observer.cancel();
-					}
-					$(item.node).detach().insertBefore(item.$input).attr('type', 'text');
-					item.$input.remove();
-				});
-				$holder.remove();
-			}
-		};
-	};
-
-	datepickerDecorator.config = {};
-	datepickerDecorator.types = {};
-
-	Ractive.decorators.datepicker = datepickerDecorator;
-}));
+})));
