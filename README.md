@@ -1,8 +1,8 @@
 # Ractive.js datepicker decorator plugin
 
-This plugin is a decorator for [bootstrap-datepicker](https://github.com/eternicode/bootstrap-datepicker).
+This plugin is a decorator for [bootstrap-datepicker](https://github.com/uxsolutions/bootstrap-datepicker).
 
-*Find more Ractive.js plugins at [http://docs.ractivejs.org/latest/plugins](http://docs.ractivejs.org/latest/plugins)*
+*Find more Ractive.js plugins at [http://ractive.js.org/integrations/plugins/](http://ractive.js.org/integrations/plugins/)*
 
 [See the demo here.](index.html)
 
