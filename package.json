@@ -1,23 +1,27 @@
 {
   "name": "ractive-decorators-datepicker",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": {
     "name": "Hidenao Miyamoto"
   },
   "license": "MIT",
   "main": "ractive-decorators-datepicker.js",
   "description": "ractive-decorators-datepicker plugin for Ractive.js",
-  "dependencies": {},
+  "dependencies": {
+    "bootstrap-datepicker": "^1.7.0",
+    "ractive": "^0.9.1"
+  },
   "devDependencies": {
     "babel-preset-es2015-rollup": "^3.0.0",
+    "deepmerge": "^1.4.4",
     "livereload": "^0.6.2",
     "npm-run-all": "^4.0.2",
     "rollup": "^0.41.6",
     "rollup-plugin-babel": "^2.7.1",
-    "rollup-plugin-multidest": "^1.0.1",
+    "rollup-plugin-multidest": "^1.0.0",
     "rollup-plugin-uglify": "^1.0.2",
     "rollup-watch": "^3.2.2",
-    "uglify-js-harmony": "^2.7.5"
+    "uglify-js-harmony": "^2.7.7"
   },
   "repository": {
     "type": "git",

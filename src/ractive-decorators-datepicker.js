@@ -1,4 +1,3 @@
-import Ractive from 'ractive';
 import $ from 'jquery';
 
 const datepickerDecorator = function (node, type = 'default') {
@@ -16,7 +15,7 @@ const datepickerDecorator = function (node, type = 'default') {
 
   const prepareDateInputs = (el) => {
     const $el = $(el);
-    const keypath = Ractive.getNodeInfo(el).getBindingPath();
+    const keypath = this.getContext(el).getBindingPath();
     const $input = $el.clone();
 
     $input.removeAttr('id').removeAttr('name').insertAfter($el);
@@ -58,7 +57,7 @@ const datepickerDecorator = function (node, type = 'default') {
       return;
     }
 
-    item.observer = this.observe(item.keypath, (newValue) => {
+    item.obsHandle = this.observe(item.keypath, (newValue) => {
       if (setting) {
         return;
       }
@@ -80,10 +79,10 @@ const datepickerDecorator = function (node, type = 'default') {
 
   return {
     teardown() {
-      $node.datepicker('remove');
+      $node.datepicker('destroy');
       dateInputs.forEach((item) => {
-        if (item.observer) {
-          item.observer.cancel();
+        if (item.obsHandle) {
+          item.obsHandle.cancel();
         }
         $(item.node).detach().insertBefore(item.$input).attr('type', 'text');
         item.$input.remove();
