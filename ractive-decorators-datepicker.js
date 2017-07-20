@@ -2,7 +2,7 @@
   ractive-decorators-datepicker
   ===============================================
 
-  Version 0.2.1.
+  Version 0.2.2.
 
   This plugin is a decorator for bootstrap-datepicker.
 
@@ -38,8 +38,12 @@ var datepickerDecorator = function datepickerDecorator(node) {
     var $el = $(el);
     var keypath = _this.getContext(el).getBindingPath();
     var $input = $el.clone();
+    var id = $el.attr('id');
 
-    $input.removeAttr('id').removeAttr('name').insertAfter($el);
+    if (id) {
+      $input.attr('id', id + '-datepicker');
+    }
+    $input.removeAttr('name').addClass('dateinput').insertAfter($el);
     $el.attr('type', 'hidden').detach().appendTo($holder);
 
     dateInputs.push({ node: el, $input: $input, keypath: keypath });

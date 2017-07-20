@@ -17,8 +17,12 @@ const datepickerDecorator = function (node, type = 'default') {
     const $el = $(el);
     const keypath = this.getContext(el).getBindingPath();
     const $input = $el.clone();
+    const id = $el.attr('id');
 
-    $input.removeAttr('id').removeAttr('name').insertAfter($el);
+    if (id) {
+      $input.attr('id', `${id}-datepicker`);
+    }
+    $input.removeAttr('name').addClass('dateinput').insertAfter($el);
     $el.attr('type', 'hidden').detach().appendTo($holder);
 
     dateInputs.push({node: el, $input, keypath});

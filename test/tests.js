@@ -28,6 +28,54 @@ describe('datepickerDecorator', function () {
     });
   });
 
+  describe('input element proxy', function () {
+    it('is created by cloning the original input element w/ -datepicker suffix in id + dateinput class', function () {
+      var ractive = new Ractive({
+        el: 'test-container',
+        template: template,
+        decorators: {datepicker: datepickerDecorator},
+      });
+      var $original = $('#datepicker-test');
+      var $input = $('.form-group input[type="text"]');
+
+      expect($input.get(0), 'not to be', $original.get(0));
+      expect($original.attr('type'), 'to be', 'hidden');
+      expect($input.attr('id'), 'to be', $original.attr('id') + '-datepicker');
+      expect($input.attr('class'), 'to equal', $original.attr('class') + ' dateinput');
+
+      ractive.teardown();
+    });
+
+    it('is created for the daterage inputs as well', function () {
+      var rangeTemplate = '<div id="daterangepicker-test" class="input-group input-daterange" as-datepicker>' +
+        '<input type="text" id="range-from" class="form-control">' +
+        '<span class="input-group-addon">to</span>' +
+        '<input type="text" id="range-to" class="form-control">' +
+        '</div>';
+      var ractive = new Ractive({
+        el: 'test-container',
+        template: rangeTemplate,
+        decorators: {datepicker: datepickerDecorator},
+      });
+      var $fromOriginal = $('#range-from');
+      var $toOriginal = $('#range-to');
+      var $fromInput = $('.input-daterange input[type="text"]:first-child');
+      var $toInput = $('.input-daterange input[type="text"]:last-child');
+
+      expect($fromInput.get(0), 'not to be', $fromOriginal.get(0));
+      expect($fromOriginal.attr('type'), 'to be', 'hidden');
+      expect($fromInput.attr('id'), 'to be', $fromOriginal.attr('id') + '-datepicker');
+      expect($fromInput.attr('class'), 'to equal', $fromOriginal.attr('class') + ' dateinput');
+      //
+      expect($toInput.get(0), 'not to be', $toOriginal.get(0));
+      expect($toOriginal.attr('type'), 'to be', 'hidden');
+      expect($toInput.attr('id'), 'to be', $toOriginal.attr('id') + '-datepicker');
+      expect($toInput.attr('class'), 'to equal', $toOriginal.attr('class') + ' dateinput');
+
+      ractive.teardown();
+    });
+  });
+
   describe('initialize options', function () {
     var ractive, datepicker;
 
