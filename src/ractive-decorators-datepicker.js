@@ -52,6 +52,8 @@ const datepickerDecorator = function (node, type = 'default') {
 
       setting = true;
       this.set(item.keypath, dpg.formatDate(date, format, language) || null);
+      // input[type=hiden] does not fire chnage event automatically. so we do it manually.
+      $(item.node).trigger('change');
       setting = false;
     });
   });
@@ -77,6 +79,11 @@ const datepickerDecorator = function (node, type = 'default') {
 
       setting = true;
       item.$input.datepicker('setDate', date);
+      // input[type=hiden] does not fire chnage event automatically. so we do it manually.
+      // and since ractive updates bound element's value after observer completes its process,
+      // we manually update the element's value here so the change event handler(s) can use
+      // the new value.
+      $(item.node).val(newValue).trigger('change');
       setting = false;
     });
   });
