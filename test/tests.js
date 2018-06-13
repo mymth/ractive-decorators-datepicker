@@ -223,6 +223,51 @@ describe('datepickerDecorator', function () {
     });
   });
 
+  describe('change event on original input', function () {
+    var ractive, datepicker, dateRangePicker, newValue;
+
+    before(function () {
+      var templateM = template;
+
+      ractive = new Ractive({
+        el: 'test-container',
+        template: templateM,
+        data: function () {
+          return {
+            date: '04/25/2017',
+          };
+        },
+        decorators: {datepicker: datepickerDecorator},
+      });
+      datepicker = getDatepicker('#datepicker-test');
+
+      $('#datepicker-test').on('change', function () {
+        newValue = this.value;
+      });
+    });
+
+    after(function () {
+      $('#datepicker-test').off('change');
+      ractive.teardown();
+    });
+
+    it('is triggered when change is made from datepicker', function () {
+      datepicker.setDate('06/22/2018');
+      expect(newValue, 'to be', '06/22/2018');
+
+      datepicker.clearDates();
+      expect(newValue, 'to be', '');
+    });
+
+    it('is triggered when change is made from ractive', function () {
+      ractive.set('date', '06/20/2018');
+      expect(newValue, 'to be', '06/20/2018');
+
+      ractive.set('date', '');
+      expect(newValue, 'to be', '');
+    });
+  });
+
   describe('internalFormat', function () {
     var ractive, datepicker;
 
