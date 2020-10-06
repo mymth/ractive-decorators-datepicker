@@ -69,7 +69,7 @@
           return;
         }
 
-        var date = item.$input.datepicker('getDate');
+        var date = item.$input.datepicker('getUTCDate');
 
         setting = true;
         _this.set(item.keypath, dpg.formatDate(date, format, language) || null);
