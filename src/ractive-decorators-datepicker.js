@@ -48,7 +48,7 @@ const datepickerDecorator = function (node, type = 'default') {
         return;
       }
 
-      const date = item.$input.datepicker('getDate');
+      const date = item.$input.datepicker('getUTCDate');
 
       setting = true;
       this.set(item.keypath, dpg.formatDate(date, format, language) || null);
