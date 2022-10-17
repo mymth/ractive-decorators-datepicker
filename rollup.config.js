@@ -1,7 +1,4 @@
-import babel from 'rollup-plugin-babel';
-import multidest from 'rollup-plugin-multidest';
-import { uglify } from 'rollup-plugin-uglify';
-import { minify } from 'uglify-es';
+import { terser } from 'rollup-plugin-terser';
 
 const pkgName = process.env.npm_package_name;
 let banner = `/*
@@ -16,13 +13,6 @@ let banner = `/*
 */
 `.replace('<%= pkg.version %>', process.env.npm_package_version);
 
-const input = `./src/${pkgName}.js`;
-const external = ['ractive', 'jquery'];
-const babelOpts = {
-  exclude: 'node_modules/**',
-  babelrc: false,
-  presets: ['es2015-rollup'],
-};
 const commonOutputOpts = {
     name: 'datepickerDecorator',
     globals: {
@@ -33,17 +23,16 @@ const commonOutputOpts = {
     banner,
 };
 
-export default [
-  {
-    input,
-    external,
-    plugins: [babel(babelOpts)],
-    output: Object.assign({file: `${pkgName}.js`}, commonOutputOpts),
-  },
-  {
-    input,
-    external,
-    plugins: [babel(babelOpts), uglify({}, minify)],
-    output: Object.assign({file: `${pkgName}.min.js`}, commonOutputOpts),
-  },
-];
+export default {
+  external: ['ractive', 'jquery'],
+  input: `./src/${pkgName}.js`,
+  output: [
+    {
+      file: `${pkgName}.js`,
+    },
+    {
+      file: `${pkgName}.min.js`,
+      plugins: [terser()],
+    },
+  ].map(opts => Object.assign({}, commonOutputOpts, opts)),
+};
