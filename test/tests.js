@@ -1,24 +1,20 @@
 // ractive-decorators-datepicker tests
 // =============================
-var expect = weknowhow.expect;
 
 describe('datepickerDecorator', function () {
-  var template = '<div class="form-group"><label for="date">Date Input</label>' +
-    '<input type="text" id="datepicker-test" class="form-control" as-datepicker value="{{date}}">' +
-    '</div>';
+  const template = `<div class="field">
+  <input type="text" id="datepicker-test" class="date" as-datepicker value="{{date}}">
+</div>`;
 
-  var getDatepicker = function getDatepicker(selector) {
-    var $el = $(selector);
-    var $input;
+  const getDatepicker = function getDatepicker(selector) {
+    const el = document.querySelector(selector);
+    if (!el) {
+      return;
+    }
 
-    if ($el.is('input')) {
-      $input = $(selector).parent().next();
-    } else if ($el.hasClass('input-daterange')) {
-      $input = $el;
-    }
-    if ($input && $input.length) {
-      return $input.data().datepicker;
-    }
+    return el.matches('input')
+      ? el.nextElementSibling.datepicker
+      : el.rangepicker;
   }
 
   describe('types', function () {
@@ -30,62 +26,110 @@ describe('datepickerDecorator', function () {
 
   describe('input element proxy', function () {
     it('is created by cloning the original input element w/ -datepicker suffix in id + dateinput class', function () {
-      var ractive = new Ractive({
+      const ractive = new Ractive({
         el: 'test-container',
-        template: template,
+        template,
         decorators: {datepicker: datepickerDecorator},
       });
-      var $original = $('#datepicker-test');
-      var $input = $('.form-group input[type="text"]');
+      const original = document.getElementById('datepicker-test');
+      const input = document.querySelector('.field input[type="text"]');
 
-      expect($input.get(0), 'not to be', $original.get(0));
-      expect($original.attr('type'), 'to be', 'hidden');
-      expect($input.attr('id'), 'to be', $original.attr('id') + '-datepicker');
-      expect($input.attr('class'), 'to equal', $original.attr('class') + ' dateinput');
+      expect(original, 'to be an', HTMLInputElement);
+      expect(input, 'to be an', HTMLInputElement);
+      expect(input, 'to be', original.nextElementSibling);
+      expect(original.type, 'to be', 'hidden');
+      expect(input.id, 'to be', `${original.id}-datepicker`);
+      expect(input.className, 'to equal', `${original.className} datepicker-input`);
 
       ractive.teardown();
     });
 
     it('is created for the daterage inputs as well', function () {
-      var rangeTemplate = '<div id="daterangepicker-test" class="input-group input-daterange" as-datepicker>' +
-        '<input type="text" id="range-from" class="form-control">' +
-        '<span class="input-group-addon">to</span>' +
-        '<input type="text" id="range-to" class="form-control">' +
-        '</div>';
-      var ractive = new Ractive({
+      const rangeTemplate = `<div id="daterangepicker-test" class="input-group" as-datepicker>
+  <input type="text" id="range-from" class="date" value="{{fromDate}}">
+  <span>to</span>
+  <input type="text" id="range-to" class="date" value="{{toDate}}">
+</div>`;
+      const ractive = new Ractive({
         el: 'test-container',
         template: rangeTemplate,
         decorators: {datepicker: datepickerDecorator},
       });
-      var $fromOriginal = $('#range-from');
-      var $toOriginal = $('#range-to');
-      var $fromInput = $('.input-daterange input[type="text"]:first-child');
-      var $toInput = $('.input-daterange input[type="text"]:last-child');
+      const fromOriginal = document.getElementById('range-from');
+      const toOriginal = document.getElementById('range-to');
+      const [fromInput, toInput] = document.querySelectorAll('.input-group input[type="text"]');
 
-      expect($fromInput.get(0), 'not to be', $fromOriginal.get(0));
-      expect($fromOriginal.attr('type'), 'to be', 'hidden');
-      expect($fromInput.attr('id'), 'to be', $fromOriginal.attr('id') + '-datepicker');
-      expect($fromInput.attr('class'), 'to equal', $fromOriginal.attr('class') + ' dateinput');
+      expect(fromOriginal, 'to be an', HTMLInputElement);
+      expect(fromInput, 'to be an', HTMLInputElement);
+      expect(fromInput, 'to be', fromOriginal.nextElementSibling);
+      expect(fromOriginal.type, 'to be', 'hidden');
+      expect(fromInput.id, 'to be', `${fromOriginal.id}-datepicker`);
+      expect(fromInput.className, 'to equal', `${fromOriginal.className} datepicker-input`);
       //
-      expect($toInput.get(0), 'not to be', $toOriginal.get(0));
-      expect($toOriginal.attr('type'), 'to be', 'hidden');
-      expect($toInput.attr('id'), 'to be', $toOriginal.attr('id') + '-datepicker');
-      expect($toInput.attr('class'), 'to equal', $toOriginal.attr('class') + ' dateinput');
+      expect(toOriginal, 'to be an', HTMLInputElement);
+      expect(toInput, 'to be an', HTMLInputElement);
+      expect(toInput, 'to be', toOriginal.nextElementSibling);
+      expect(toOriginal.type, 'to be', 'hidden');
+      expect(toInput.id, 'to be', `${toOriginal.id}-datepicker`);
+      expect(toInput.className, 'to equal', `${toOriginal.className} datepicker-input`);
+
+      ractive.teardown();
+    });
+
+    it('is not created if the input element has no binding', function () {
+      let ractive = new Ractive({
+        el: 'test-container',
+        template: '<input type="text" id="datepicker-test" as-datepicker>',
+        decorators: {datepicker: datepickerDecorator},
+      });
+      const original = document.getElementById('datepicker-test');
+      const input = document.querySelector('input[type="text"]');
+
+      expect(original, 'to be an', HTMLInputElement);
+      expect(input, 'to be an', HTMLInputElement);
+      expect(input, 'to be', original);
+      expect(input.className, 'to equal', 'datepicker-input');
+
+      ractive.teardown();
+
+      ractive = new Ractive({
+        el: 'test-container',
+        template: `<div id="daterangepicker-test" class="input-group" as-datepicker>
+  <input type="text" id="range-from">
+  <span>to</span>
+  <input type="text" id="range-to">
+</div>`,
+        decorators: {datepicker: datepickerDecorator},
+      });
+      const fromOriginal = document.getElementById('range-from');
+      const toOriginal = document.getElementById('range-to');
+      const [fromInput, toInput] = document.querySelectorAll('.input-group input[type="text"]');
+
+      expect(fromOriginal, 'to be an', HTMLInputElement);
+      expect(fromInput, 'to be an', HTMLInputElement);
+      expect(fromInput, 'to be', fromOriginal);
+      expect(fromInput.className, 'to equal', 'datepicker-input');
+      //
+      expect(toOriginal, 'to be an', HTMLInputElement);
+      expect(toInput, 'to be an', HTMLInputElement);
+      expect(toInput, 'to be', toOriginal);
+      expect(toInput.className, 'to equal', 'datepicker-input');
 
       ractive.teardown();
     });
   });
 
   describe('initialize options', function () {
-    var ractive, datepicker;
+    let ractive;
+    let datepicker;
 
     it('uses "default" type to create datepicker onto the node by default', function () {
-      datepickerDecorator.types.default.autoclose = true;
+      datepickerDecorator.types.default.autohide = true;
 
       ractive = new Ractive({
         el: 'test-container',
-        template: template,
-        data: function () {
+        template,
+        data: function() {
           return {
             date: '05/15/2014',
           };
@@ -94,24 +138,22 @@ describe('datepickerDecorator', function () {
       });
       datepicker = getDatepicker('#datepicker-test');
 
-      expect(datepicker.o.autoclose, 'to be true');
+      expect(datepicker.config.autohide, 'to be true');
 
       ractive.teardown();
     });
 
     it('uses the type specified by arg to create datepicker object', function () {
-      datepickerDecorator.types.todayBtn = {
-        todayBtn: true,
-        todayHighlight: true
+      datepickerDecorator.types.todayButton = {
+        todayButton: true,
+        todayHighlight: true,
       };
-
-      var templateT = '<div class="form-group"><label for="date">Date Input</label>' +
-        '<input type="text" id="datepicker-test" class="form-control" as-datepicker="\'todayBtn\'" value="{{date}}">' +
-        '</div>';
 
       ractive = new Ractive({
         el: 'test-container',
-        template: templateT,
+        template: `<div class="field">
+  <input type="text" id="datepicker-test" as-datepicker="'todayButton'" value="{{date}}">
+</div>`,
         data: function () {
           return {
             date: '04/25/2016',
@@ -121,24 +163,22 @@ describe('datepickerDecorator', function () {
       });
       datepicker = getDatepicker('#datepicker-test');
 
-      expect(datepicker.o.todayBtn, 'to be true');
-      expect(datepicker.o.todayHighlight, 'to be true');
+      expect(datepicker.config.todayButton, 'to be true');
+      expect(datepicker.config.todayHighlight, 'to be true');
 
       ractive.teardown();
     });
 
     it('uses "default" if specified type does not exist', function () {
-      datepickerDecorator.types = {default: {autoclose: true}};
-
-      var templateN = '<div id="datepicker-test" class="input-group input-daterange" as-datepicker="\'none\'">' +
-        '<input type="text" class="form-control" value="{{startDate}}">' +
-        '<span class="input-group-addon">to</span>' +
-        '<input type="text" class="form-control" value="{{endDate}}">' +
-        '</div>';
+      datepickerDecorator.types = {default: {autohide: true}};
 
       ractive = new Ractive({
         el: 'test-container',
-        template: templateN,
+        template: `<div id="datepicker-test" class="input-group" as-datepicker="'none'">
+  <input type="text" value="{{startDate}}">
+  <span>to</span>
+  <input type="text" value="{{endDate}}">
+</div>`,
         data: function () {
           return {
             startDate: '10/10/2017',
@@ -150,29 +190,29 @@ describe('datepickerDecorator', function () {
 
       var dateRangePicker = getDatepicker('#datepicker-test');
 
-      expect(dateRangePicker.pickers[0].o.autoclose, 'to be true');
-      expect(dateRangePicker.pickers[1].o.autoclose, 'to be true');
+      expect(dateRangePicker.datepickers[0].config.autohide, 'to be true');
+      expect(dateRangePicker.datepickers[1].config.autohide, 'to be true');
 
       ractive.teardown();
     });
   });
 
   describe('two-way binding', function () {
-    var ractive, datepicker, dateRangePicker;
+    let ractive;
+    let datepicker;
+    let dateRangePicker;
 
     before(function () {
-      var templateM = template +
-        '{{#dateRange}}' +
-        '<div id="daterangepicker-test" class="input-group input-daterange" as-datepicker>' +
-        '<input type="text" class="form-control" value="{{startDate}}">' +
-        '<span class="input-group-addon">to</span>' +
-        '<input type="text" class="form-control" value="{{endDate}}">' +
-        '</div>' +
-        '{{/dateRange}}';
-
       ractive = new Ractive({
         el: 'test-container',
-        template: templateM,
+        template: `${template}
+  {{#dateRange}}
+  <div id="daterangepicker-test" class="input-group" as-datepicker>
+    <input type="text" value="{{startDate}}">
+    <span>to</span>
+    <input type="text" value="{{endDate}}">
+  </div>
+{{/dateRange}}`,
         data: function () {
           return {
             date: '04/25/2017',
@@ -196,75 +236,35 @@ describe('datepickerDecorator', function () {
       datepicker.setDate('04/28/2017');
       expect(ractive.get('date'), 'to be', '04/28/2017');
 
-      datepicker.setDate('');
+      datepicker.setDate({clear: true});
       expect(ractive.get('date'), 'to be null');
 
-      dateRangePicker.pickers[0].setDate('09/07/2017');
-      dateRangePicker.pickers[1].setDate('10/12/2017');
+      dateRangePicker.datepickers[0].setDate('09/07/2017');
+      dateRangePicker.datepickers[1].setDate('10/12/2017');
 
       expect(ractive.get('dateRange'), 'to equal', {
         startDate: '09/07/2017',
         endDate: '10/12/2017',
       });
+
+      dateRangePicker.setDates({clear: true});
+      expect(ractive.get('dateRange'), 'to equal', {
+        startDate: null,
+        endDate: null,
+      });
     });
 
     it('applies changes on ractive to datepicker', function () {
       ractive.set('date', '10/16/2017');
-      expect(datepicker.getDate(), 'to equal', new Date('10/16/2017'));
+      expect(datepicker.getDate('mm/dd/yyyy'), 'to be', '10/16/2017');
 
       ractive.set('date', null);
-      expect(datepicker.getDate(), 'to be null');
+      expect(datepicker.getDate(), 'to be undefined');
 
       ractive.set('dateRange.startDate', '06/25/2017');
       ractive.set('dateRange.endDate', '07/06/2017');
 
-      expect(dateRangePicker.pickers[0].getDate(), 'to equal', new Date('06/25/2017'));
-      expect(dateRangePicker.pickers[1].getDate(), 'to equal', new Date('07/06/2017'));
-    });
-  });
-
-  describe('change event on original input', function () {
-    var ractive, datepicker, dateRangePicker, newValue;
-
-    before(function () {
-      var templateM = template;
-
-      ractive = new Ractive({
-        el: 'test-container',
-        template: templateM,
-        data: function () {
-          return {
-            date: '04/25/2017',
-          };
-        },
-        decorators: {datepicker: datepickerDecorator},
-      });
-      datepicker = getDatepicker('#datepicker-test');
-
-      $('#datepicker-test').on('change', function () {
-        newValue = this.value;
-      });
-    });
-
-    after(function () {
-      $('#datepicker-test').off('change');
-      ractive.teardown();
-    });
-
-    it('is triggered when change is made from datepicker', function () {
-      datepicker.setDate('06/22/2018');
-      expect(newValue, 'to be', '06/22/2018');
-
-      datepicker.clearDates();
-      expect(newValue, 'to be', '');
-    });
-
-    it('is triggered when change is made from ractive', function () {
-      ractive.set('date', '06/20/2018');
-      expect(newValue, 'to be', '06/20/2018');
-
-      ractive.set('date', '');
-      expect(newValue, 'to be', '');
+      expect(dateRangePicker.getDates('mm/dd/yyyy'), 'to equal', ['06/25/2017', '07/06/2017']);
     });
   });
 
@@ -299,7 +299,7 @@ describe('datepickerDecorator', function () {
       expect(ractive.get('date'), 'to be', '20/03/2017');
 
       ractive.set('date', '01/04/2017');
-      expect(datepicker.getDate(), 'to equal', new Date('04/01/2017'));
+      expect(datepicker.getDate('mm/dd/yyyy'), 'to be', '04/01/2017');
 
       ractive.teardown();
 
@@ -321,7 +321,7 @@ describe('datepickerDecorator', function () {
       expect(ractive.get('date'), 'to be', '2017-03-20');
 
       ractive.set('date', '2017-04-01');
-      expect(datepicker.getDate(), 'to equal', new Date('04/01/2017'));
+      expect(datepicker.getDate('mm/dd/yyyy'), 'to be', '04/01/2017');
     });
   });
 });

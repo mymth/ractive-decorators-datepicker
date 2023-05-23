@@ -2,131 +2,124 @@
   ractive-decorators-datepicker
   ===============================================
 
-  Version 0.3.0.
+  Version 0.4.0.
 
   This plugin is a decorator for bootstrap-datepicker.
 
   ==========================
 */
 
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('jquery')) :
-  typeof define === 'function' && define.amd ? define(['jquery'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.datepickerDecorator = factory(global.$));
-})(this, (function ($) { 'use strict';
+import { Datepicker, DateRangePicker } from 'vanillajs-datepicker';
 
-  function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+function datepickerDecorator(node, type = 'default') {
+  const {internalFormat, types} = datepickerDecorator;
+  const options = types[type] || types.default;
+  const format = internalFormat || options.format || 'mm/dd/yyyy';
+  const language = options.language || 'en';
+  const origInputs = new WeakMap();
+  let dateInputs;
+  let datepicker;
 
-  var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+  const prepareDateInput = (element) => {
+    const keypath = this.getContext(element).getBindingPath();
+    if (!keypath) {
+      origInputs.set(element, {});
+      return element;
+    }
 
-  const datepickerDecorator = function (node, type = 'default') {
-    const internalFormat = datepickerDecorator.internalFormat;
-    const types = datepickerDecorator.types;
-    const dpg = $__default["default"].fn.datepicker.DPGlobal;
-    const dateInputs = [];
-    let $node = $__default["default"](node);
+    const orignalType = element.type;
+    const input = element.cloneNode();
+
+    if (element.id) {
+      input.id = `${element.id}-datepicker`;
+    }
+    input.removeAttribute('name');
+    // remove initial value to prevent it from being parsed to a wrong date
+    // when internalFormat != datepicker's format
+    // the inital value will be set by the observer callback as it's called
+    // immediately when added
+    input.value = '';
+    element.type = 'hidden';
+    element.after(input);
+
+    origInputs.set(input, {element, keypath, orignalType});
+    return input;
+  };
+  const restoreOriginalInput = (dateInput) => {
+    const origInput = origInputs.get(dateInput);
+    dateInput.remove();
+    origInput.element.type = origInput.orignalType;
+  };
+
+  if (node.tagName === 'INPUT') {
+    const input = prepareDateInput(node);
+    dateInputs = [input];
+    datepicker = new Datepicker(input, options);
+  } else {
+    const rangePickerOptions = Object.assign({}, options);
+    const inputs = options.inputs || Array.from(node.querySelectorAll('input[type="text"]'));
+    dateInputs = rangePickerOptions.inputs = inputs.slice(0, 2).map(prepareDateInput);
+    datepicker = new DateRangePicker(node, rangePickerOptions);
+  }
+  if (!datepicker) {
+    dateInputs.forEach(restoreOriginalInput);
+    return {
+      teardown() {},
+    };
+  }
+
+  dateInputs.forEach((dateInput) => {
+    const keypath = origInputs.get(dateInput).keypath;
+    if (!keypath) {
+      return;
+    }
     let setting = false;
 
-    const options = types.hasOwnProperty(type) ? types[type] : types.default;
-    const format = internalFormat || options.format || $__default["default"].fn.datepicker.defaults.format;
-    const language = options.language || $__default["default"].fn.datepicker.defaults.language;
-    const $holder = $__default["default"]('<div class="dateinput-original" />').insertBefore($node);
-
-    const prepareDateInputs = (el) => {
-      const $el = $__default["default"](el);
-      const keypath = this.getContext(el).getBindingPath();
-      const $input = $el.clone();
-      const id = $el.attr('id');
-
-      if (id) {
-        $input.attr('id', `${id}-datepicker`);
+    const changeDateListenr = dateInput.changeDateListenr = () => {
+      if (setting === dateInput) {
+        return
       }
-      $input.removeAttr('name').addClass('dateinput').insertAfter($el);
-      $el.attr('type', 'hidden').detach().appendTo($holder);
 
-      dateInputs.push({node: el, $input, keypath});
+      setting = dateInput;
+      this.set(keypath, dateInput.datepicker.getDate(format) || null);
+      setting = false;
     };
+    dateInput.addEventListener('changeDate', changeDateListenr);
 
-    if (node.tagName == 'INPUT') {
-      prepareDateInputs(node);
-      $node = dateInputs[0].$input;
-    } else if ($node.hasClass('input-daterange')) {
-      $node.children('input[type="text"]').each((index, el) => {
-        prepareDateInputs(el);
-      });
-    }
-    if (dateInputs.length === 0) {
-      return {
-        teardown() {},
-      };
-    }
-
-    $node.datepicker(options).on('changeDate', () => {
-      dateInputs.forEach((item) => {
-        if (!item.keypath || setting) {
-          return;
-        }
-
-        const date = item.$input.datepicker('getUTCDate');
-
-        setting = true;
-        this.set(item.keypath, dpg.formatDate(date, format, language) || null);
-        // input[type=hiden] does not fire chnage event automatically. so we do it manually.
-        $__default["default"](item.node).trigger('change');
-        setting = false;
-      });
-    });
-
-    dateInputs.forEach((item) => {
-      if (!item.keypath) {
+    dateInput.obsHandle = this.observe(keypath, (newValue) => {
+      if (setting === dateInput) {
         return;
       }
 
-      item.obsHandle = this.observe(item.keypath, (newValue) => {
-        if (setting) {
+      const values = newValue
+        ? (Array.isArray(newValue) ? newValue : [newValue])
+        : [];
+      const newDates = values.map(date => Datepicker.parseDate(date, format, language));
+
+      setting = dateInput;
+      dateInput.datepicker.setDate(newDates, {clear: true});
+      setting = false;
+    });
+  });
+
+  return {
+    teardown() {
+      datepicker.destroy();
+      dateInputs.forEach((dateInput) => {
+        if (!origInputs.get(dateInput).keypath) {
           return;
         }
-
-        let date = dpg.parseDate(newValue, format, language);
-        if (date) {
-          // adjust the time so the parsed Date becomes 00:00:00 localtime of that date
-          // because Datepicker parses date as UTC regardless of the format
-          date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
-        } else {
-          date = '';
-        }
-
-        setting = true;
-        item.$input.datepicker('setDate', date);
-        // input[type=hiden] does not fire chnage event automatically. so we do it manually.
-        // and since ractive updates bound element's value after observer completes its process,
-        // we manually update the element's value here so the change event handler(s) can use
-        // the new value.
-        $__default["default"](item.node).val(newValue).trigger('change');
-        setting = false;
+        dateInput.obsHandle.cancel();
+        dateInput.removeEventListener('changeDate', dateInput.changeDateListenr);
+        restoreOriginalInput(dateInput);
       });
-    });
-
-    return {
-      teardown() {
-        $node.datepicker('destroy');
-        dateInputs.forEach((item) => {
-          if (item.obsHandle) {
-            item.obsHandle.cancel();
-          }
-          $__default["default"](item.node).detach().insertBefore(item.$input).attr('type', 'text');
-          item.$input.remove();
-        });
-        $holder.remove();
-      }
-    };
+    }
   };
+}
 
-  datepickerDecorator.internalFormat = null;
-  datepickerDecorator.types = {
-    default: {},
-  };
+datepickerDecorator.internalFormat = null;
+datepickerDecorator.types = {
+  default: {},
+};
 
-  return datepickerDecorator;
-
-}));
+export { datepickerDecorator as default };

@@ -2,8 +2,7 @@
 <html>
 <head>
     <title>ractive-decorators-datepicker test suite</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/bootstrap/3.3.7/css/bootstrap.css">
-    <link rel='stylesheet' href='../node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker.css'>
+    <link rel="stylesheet" href="../node_modules/vanillajs-datepicker/dist/css/datepicker.css">
     <link href="https://cdn.jsdelivr.net/npm/mocha/mocha.css" rel="stylesheet">
     <style type="text/css">
         #test {
@@ -14,8 +13,8 @@
     </style>
 </head>
 <body>
-    <div id='qunit'></div>
-    <div id='qunit-fixture'></div>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
 
     <div id="test" class="clearfix">
         <form>
@@ -25,25 +24,24 @@
 
     <div id="mocha"></div>
 
-    <script src="https://cdn.jsdelivr.net/jquery/3.2.1/jquery.js"></script>
-    <script src="https://cdn.jsdelivr.net/bootstrap/3.3.7/js/bootstrap.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/unexpected/unexpected.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mocha/mocha.js"></script>
-    <script src="../node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
-    <script src='../node_modules/ractive/ractive.js'></script>
-    <script src='../ractive-decorators-datepicker.js'></script>
+    <script src="../node_modules/vanillajs-datepicker/dist/js/datepicker-full.js"></script>
+    <script src="../node_modules/ractive/ractive.js"></script>
+    <script src="../dist/ractive-decorators-datepicker.js"></script>
 
     <script>
+      var expect = weknowhow.expect;
       mocha.setup('bdd');
     </script>
 
     <!-- load test modules -->
 
-    <script src='tests.js'></script>
+    <script src="tests.js"></script>
     <script>
-    $(document).ready(() => {
+    document.addEventListener('DOMContentLoaded', () => {
       mocha.checkLeaks();
-      mocha.globals(['jQuery', 'Ractive', 'ractive', 'weknowhow']);
+      mocha.globals(['Ractive', 'ractive', 'expect']);
       mocha.run();
     });
     </script>

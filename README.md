@@ -1,10 +1,10 @@
 # Ractive.js datepicker decorator plugin
 
-This plugin is a decorator for [bootstrap-datepicker](https://github.com/uxsolutions/bootstrap-datepicker).
+This plugin is a decorator for [vanillajs-datepicker](https://github.com/mymth/vanillajs-datepicker).
 
-*Find more Ractive.js plugins at [http://ractive.js.org/integrations/plugins/](http://ractive.js.org/integrations/plugins/)*
+*Find more Ractive.js plugins at [http://ractive.js.org/resources/#plugins/](http://ractive.js.org/resources/#plugins/)*
 
-[See the demo here.](index.html)
+[See the demo here.](https://raw.githack.com/mymth/ractive-decorators-datepicker/v0.4.0/index.html)
 
 ## Usage
 
@@ -12,13 +12,13 @@ Load the plugin.
 
 ```html
 <!-- on Browser (plugin is exposed to global with 'datepickerDecorator' signature) -->
-<script src="lib/ractive.js"></script>
-<script src="lib/ractive-decorators-datepicker.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ractive"></script>
+<script src="https://cdn.jsdelivr.net/gh/mymth/ractive-decorators-datepicker@0.4.0/dist/ractive-decorators-datepicker.js"></script>
 ```
 ```js
 // on Node.js
-var Ractive = require( 'ractive' );
-var datepickerDecorator = require( 'ractive-decorators-datepicker' );
+import Ractive from 'ractive';
+import datepickerDecorator from 'ractive-decorators-datepicker';
 ```
 
 Make the decorator available.
@@ -51,28 +51,12 @@ Set the `as-datepicker` attribute to the `input` tag (for single date) or `input
 <input type="text" as-datepicker value="{{date}}">
 
 <!-- date range -->
-<div class="input-group input-daterange" as-datepicker>
-    <input type="text" value="{{startDate}}">
-    <span class="input-group-addon">to</span>
-    <input type="text" value="{{endDate}}">
+<div class="input-group" as-datepicker>
+    <input type="text" class="form-control" value="{{startDate}}">
+    <span class="input-group-text">to</span>
+    <input type="text" class="form-control" value="{{endDate}}">
 </div>
 ```
-
-> Bootstrap-datepicker components *(not to be confused with Ractive components)* are not supported. You can create an equivalent like an example below when you need it.
-> 
-> ```html
-> <!-- component equivalent -->
-> <div class="input-group date">
->     <input type="text" as-datepicker value="{{date}}">
->     <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-> </div>
-> 
-> <script>
->     $('.input-group.date').find('.input-group-addon').on('click', function () {
->         $(this).siblings('input').datepicker('show');
->     });
-> </script>
-> ```
 
 
 ### Using types
@@ -83,8 +67,8 @@ You can set your initialize options for bootstrap-datepicker to `datepickerDecor
 
 ```js
 datepickerDecorator.types.default = {
-    autoclose: true,
-    clearBtn: true
+    autohide: true,
+    clearButton: true
 };
 ```
 
@@ -94,12 +78,12 @@ You can also use multiple types of bootstrap-datepicker elements.
 To use additional types, first, add new types to `datepickerDecorator.types` with their initialize options.
 
 ```js
-datepickerDecorator.types.todayBtn = {
-    todayBtn: true,
+datepickerDecorator.types.todayButton = {
+    todayButton: true,
     todayHighlight: true
 };
 datepickerDecorator.types.multi = {
-    multidate: true,
+    maxNumberOfDates: 3,
 };
 ```
 
@@ -107,7 +91,7 @@ Then set the type name to the `as-datepicker` attribute.
 > Note: type name *must be quoted* so that the decorator can take it as a literal.
 
 ```html
-<input type="text" as-datepicker="'todayBtn'" value="{{date}}">
+<input type="text" as-datepicker="'todayButton'" value="{{date}}">
 ```
 
 ### Using internal date format
@@ -120,4 +104,4 @@ datepickerDecorator.internalFormat = 'yyyy-mm-dd';
 
 ## License
 
-Copyright (c) 2014 Hidenao Miyamoto. Licensed MIT
+Copyright (c) 2016 Hidenao Miyamoto. Licensed MIT
