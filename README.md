@@ -2,7 +2,7 @@
 
 This plugin is a decorator for [vanillajs-datepicker](https://github.com/mymth/vanillajs-datepicker).
 
-*Find more Ractive.js plugins at [http://ractive.js.org/resources/#plugins/](http://ractive.js.org/resources/#plugins/)*
+*Find more Ractive.js plugins at [http://ractive.js.org/resources/#plugins/](https://ractive.js.org/resources/#plugins/)*
 
 [See the demo here.](https://raw.githack.com/mymth/ractive-decorators-datepicker/v0.4.0/index.html)
 
