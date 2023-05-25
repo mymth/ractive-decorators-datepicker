@@ -2,7 +2,7 @@
 
 This plugin is a decorator for [vanillajs-datepicker](https://github.com/mymth/vanillajs-datepicker).
 
-*Find more Ractive.js plugins at [http://ractive.js.org/resources/#plugins/](https://ractive.js.org/resources/#plugins/)*
+*Find more Ractive.js plugins at [ractive.js.org/resources/#plugins/](https://ractive.js.org/resources/#plugins/)*
 
 [See the demo here.](https://raw.githack.com/mymth/ractive-decorators-datepicker/v0.4.0/index.html)
 
@@ -11,12 +11,16 @@ This plugin is a decorator for [vanillajs-datepicker](https://github.com/mymth/v
 Load the plugin.
 
 ```html
-<!-- on Browser (plugin is exposed to global with 'datepickerDecorator' signature) -->
+
+<!-- on Browser: -->
+<!-- • vanillajs-datepicker is expected to be loaded before the plugin -->
+<!-- • the plugin is exposed to global as 'datepickerDecorator' -->
 <script src="https://cdn.jsdelivr.net/npm/ractive"></script>
 <script src="https://cdn.jsdelivr.net/gh/mymth/ractive-decorators-datepicker@0.4.0/dist/ractive-decorators-datepicker.js"></script>
 ```
 ```js
-// on Node.js
+// on Node.js:
+// • the plugin imports vanillajs-datepicker internally
 import Ractive from 'ractive';
 import datepickerDecorator from 'ractive-decorators-datepicker';
 ```
