@@ -4,7 +4,7 @@ This plugin is a decorator for [vanillajs-datepicker](https://github.com/mymth/v
 
 *Find more Ractive.js plugins at [ractive.js.org/resources/#plugins/](https://ractive.js.org/resources/#plugins/)*
 
-[See the demo here.](https://raw.githack.com/mymth/ractive-decorators-datepicker/v0.4.0/index.html)
+[See the demo here.](https://bbcdn.githack.com/mymth/ractive-decorators-datepicker/raw/v0.4.0/index.html)
 
 ## Usage
 
